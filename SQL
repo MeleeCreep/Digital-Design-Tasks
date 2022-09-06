@@ -1,0 +1,67 @@
+create database department;
+
+use department;
+
+create table department
+(
+	iddepartment int not null,
+    department_name varchar(100)
+);
+
+create table employee
+(
+	idemployee int not null,
+    iddepartment int,
+    id_chief int,
+    employee_name varchar(100),
+    salary double
+);
+
+insert into department(iddepartment, department_name) 
+values	(1, 'Административный отдел'),
+		(2, 'Коммерческий отдел'),
+        (3, 'Технический отдел'),
+        (4, 'Производственный отдел'),
+        (5, 'Транспортный отдел'),
+        (6, 'Эксплуатационный отдел');
+
+insert into employee(idemployee, iddepartment, id_chief, employee_name, salary)
+values	(10, 1, 101, 'Печушкин Роман Алексеевич', 32589.34),
+ (11, 1, 101, 'Титов Рудольф Романович', 23456.56),
+ (12, 1, 101, 'Лесоповалов Константин Олегович', 12465.75),
+ (20, 2, 102, 'Пивоваров Дмитрий Анатольевич', 68326.63),
+ (21, 2, 102, 'Кривоносова Анна Александровна', 20543.87),
+ (22, 2, 102, 'Самойлов Евгений Владиславович', 67482.46),
+ (30, 3, 103, 'Акулов Ярослав Никитич', 45764.53),
+ (31, 3, 103, 'Файзулин Ренат Андреевич', 37467.98),
+ (32, 3, 103, 'Иванова Ксения Сергеевна', 53689.54),
+ (40, 4, 104, 'Мозамбиков Владлен Васильевич', 27975.76),
+ (41, 4, 104, 'Добровольская Галина Сергеевна', 44775.58),
+ (42, 4, 104, 'Слюсаренко Кира Владимировна', 32475.23),
+ (50, 5, 105, 'Королькова Вера Николаевна', 45743.75),
+ (51, 5, 105, 'Никитин Дмитрий Сергеевич', 24475.56), 
+ (52, 5, 105, 'Щарев Семен Леонидович', 74387.75), 
+ (60, 6, 106, 'Деречик Ульяна Владимировна', 28586.68), 
+ (61, 6, 106, 'Миронова Варвара Владиславовна', 64867.42),
+ (62, 6, 106, 'Секерко Алексей Олегович', 40646.65);
+
+/*Первый запрос 1. Сотрудника с максимальной заработной платой.*/
+select employee_name, max(salary) from department.employee;
+
+/*Второй запрос 2. Отдел, с самой высокой заработной платой между сотрудниками.*/
+select department_name 'Название отдела', employee_name, max(salary) 'Зарплата' 
+from department.department d1 inner join department.employee e1
+on d1.iddepartment = e1.iddepartment;
+
+/*Третий запрос 3. Отдел, с максимальной суммарной зарплатой сотрудников.*/
+with max_dep_salary as 
+(select iddepartment, round(sum(salary), 2) as max_salary
+from department.employee group by iddepartment)
+select department_name, max_salary from department.department d1 inner join max_dep_salary md1
+on d1.iddepartment = md1.iddepartment
+where md1.max_salary = (select max(max_salary) from max_dep_salary);
+
+
+/*Четверный запрос 4. Сотрудника, чье имя начинается на «Р» и заканчивается на «н».*/
+select idemployee, employee_name from department.employee
+where employee_name like '% Р%н %'
